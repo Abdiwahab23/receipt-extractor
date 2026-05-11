@@ -42,7 +42,7 @@ dropZone.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) {
+  if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
     handleFile(file);
   }
 });
@@ -55,13 +55,20 @@ fileInput.addEventListener('change', (e) => {
 async function handleFile(file) {
   console.log("File selected:", file.name, file.type, file.size);
   // Show preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    previewImg.src = e.target.result;
-    previewImg.style.display = 'block';
-    uploadPlaceholder.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+  if (file.type === 'application/pdf') {
+    previewImg.style.display = 'none';
+    uploadPlaceholder.style.display = 'block';
+    uploadPlaceholder.querySelector('h3').textContent = 'PDF Selected';
+    uploadPlaceholder.querySelector('p').textContent = file.name;
+  } else {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      previewImg.style.display = 'block';
+      uploadPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
 
   // UI state for processing
   loadingOverlay.style.display = 'flex';

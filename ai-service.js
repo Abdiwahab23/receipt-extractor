@@ -21,7 +21,7 @@ export async function extractReceiptData(imageFile) {
     console.log("Model initialized:", model.model);
 
     const prompt = `
-      Extract the following information from this receipt image:
+      Extract the following information from this receipt image or document:
       - Merchant name
       - Date (in YYYY-MM-DD format if possible)
       - Total amount (as a number)
