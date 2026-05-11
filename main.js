@@ -120,6 +120,28 @@ form.addEventListener('submit', async (e) => {
       throw new Error("Database connection not configured. Check your .env file.");
     }
 
+    // Prevent duplicates by checking if merchant, date, and total already exist
+    const { data: existing, error: searchError } = await supabase
+      .from('receipts')
+      .select('id')
+      .ilike('merchant', submission.merchant)
+      .eq('date', submission.date)
+      .eq('total', submission.total);
+
+    if (searchError) throw searchError;
+
+    if (existing && existing.length > 0) {
+      Swal.fire({
+        title: 'Duplicate Found!',
+        text: 'This receipt has already been saved.',
+        icon: 'warning',
+        background: '#1e293b',
+        color: '#f8fafc',
+        confirmButtonColor: '#6366f1'
+      });
+      return;
+    }
+
     const { data, error } = await supabase
       .from('receipts')
       .insert([submission]);
